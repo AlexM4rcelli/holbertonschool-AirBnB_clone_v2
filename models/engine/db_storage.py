@@ -35,20 +35,25 @@ class DBStorage:
             BaseModel.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        from models import base_model
-        result = {}
-        classes = [State, City]
+        """Query on the curret database session all objects of the given class.
 
-        if cls:
-            classes = [cls]
+        If cls is None, queries all types of objects.
 
-        for class_obj in classes:
-            objects = self.__session.query(class_obj).all()
-            for obj in objects:
-                key = f"{obj.__class__.__name__}.{obj.id}"
-                result[key] = obj
-
-        return result
+        Return:
+            Dict of queried classes in the format <class name>.<obj id> = obj.
+        """
+        if cls is None:
+            objs = self.__session.query(State).all()
+            objs.extend(self.__session.query(City).all())
+            objs.extend(self.__session.query(User).all())
+            objs.extend(self.__session.query(Place).all())
+            objs.extend(self.__session.query(Review).all())
+            objs.extend(self.__session.query(Amenity).all())
+        else:
+            if type(cls) == str:
+                cls = eval(cls)
+            objs = self.__session.query(cls)
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
 
     def new(self, obj):
         self.__session.add(obj)
