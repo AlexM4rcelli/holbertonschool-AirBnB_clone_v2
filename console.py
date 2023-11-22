@@ -127,14 +127,14 @@ class HBNBCommand(cmd.Cmd):
         new_instance = eval(f"{args[0]}()")
 
         for arg in args[1:]:
-            key, value = arg.split('=')
+            key, value = arg.split('=')[0], arg.split('=')[1]
 
             if key not in dir(new_instance):
                 return
 
-            value = value.replace("_", " ").replace('\\"', '"')
+            value = value.replace("_", " ")
 
-            if value.startswith('"'):
+            if value != value.strip('"'):
                 value = value.strip('"')
             elif '.' in value:
                 try:
