@@ -128,25 +128,27 @@ class HBNBCommand(cmd.Cmd):
 
         for arg in args[1:]:
             key, value = arg.split('=')[0], arg.split('=')[1]
-
+            print(f"Key:{key} - Value:{value}")
             if key not in dir(new_instance):
                 return
 
-            value = value.replace("_", " ")
 
             if value != value.strip('"'):
+                value = value.replace("_", " ").replace('\\"', '"')
                 value = value.strip('"')
             elif '.' in value:
                 try:
                     value = float(value)
                 except ValueError:
                     new_instance.save()
+                    print(new_instance.id)
                     return
             else:
                 try:
                     value = int(value)
                 except ValueError:
                     new_instance.save()
+                    print(new_instance.id)
                     return
             setattr(new_instance, key, value)
 
