@@ -37,7 +37,7 @@ class DBStorage:
     def all(self, cls=None):
         from models import base_model
         result = {}
-        classes = [State, City]
+        classes = [State, City, User]
 
         if cls:
             classes = [cls]
