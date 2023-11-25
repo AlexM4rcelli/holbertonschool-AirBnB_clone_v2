@@ -35,19 +35,20 @@ class DBStorage:
             BaseModel.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-      """kalsñdkaña"""
-        if cls is None:
-            objs = self.__session.query(State).all()
-            objs.extend(self.__session.query(City).all())
-            objs.extend(self.__session.query(User).all())
-            objs.extend(self.__session.query(Place).all())
-            objs.extend(self.__session.query(Review).all())
-            objs.extend(self.__session.query(Amenity).all())
-        else:
-            if type(cls) == str:
-                cls = eval(cls)
-            objs = self.__session.query(cls)
-        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
+        from models import base_model
+        result = {}
+        classes = [State, City, User, Place]
+
+        if cls:
+            classes = [cls]
+
+        for class_obj in classes:
+            objects = self.__session.query(class_obj).all()
+            for obj in objects:
+                key = f"{obj.__class__.__name__}.{obj.id}"
+                result[key] = obj
+
+        return result
 
     def new(self, obj):
         self.__session.add(obj)
@@ -65,6 +66,4 @@ class DBStorage:
                                               expire_on_commit=False))
         self.__session = Session()
         
-     def close(self):
-        """Close the working SQLAlchemy session."""
-        self.__session.close()
+    
